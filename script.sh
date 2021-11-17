@@ -20,8 +20,8 @@ case "$choice" in
          i=`date`
          echo DATE = $i >> /tmp/pre_reboot_checks.txt
          echo ""
-		 i=`uptime`
-		 echo UPTIME = $i >> /tmp/pre_reboot_checks.txt
+	 i=`uptime`
+	 echo UPTIME = $i >> /tmp/pre_reboot_checks.txt
          i=`hostname`
          echo Servername = $i >> /tmp/pre_reboot_checks.txt
          echo ""
@@ -69,6 +69,9 @@ case "$choice" in
          echo  ===============================*POST_REBOOT_CHECKS_RESULT*=============================== >> /tmp/post_reboot_checks.txt
          i=`date`
          echo DATE = $i >> /tmp/post_reboot_checks.txt
+	 echo ""
+	 i=`uptime`
+	 echo UPTIME = $i >> /tmp/pre_reboot_checks.txt
          echo ""
          i=`hostname`
          echo Servername = $i >> /tmp/post_reboot_checks.txt
