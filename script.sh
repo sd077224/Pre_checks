@@ -132,7 +132,6 @@ case "$choice" in
          fi
          echo "Enter your Mail id (example suyog.deshpande@cerner.com)"
          read f1
-         file=/tmp/diff_result.txt
          mail -a /tmp/diff_result.txt  -s "Pre/Post checks Comp" $f1 < /dev/null
 
 esac
