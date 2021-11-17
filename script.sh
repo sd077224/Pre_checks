@@ -1,7 +1,7 @@
 ##############################################################################################################################################################
-#             		                            Script Name: Linux_Reboots_checks                                                                               
-#             		                            Description: This script generates all pre and post reboot checks.                                              
-#             		                            Scrit Owner: Suyog Deshpande (sd077224)	                                                                        
+            		                            Script Name: Linux_Reboots_checks                                                                               
+             		                            Description: This script generates all pre and post reboot checks.                                              
+             		                            Scrit Owner: Suyog Deshpande (sd077224)	                                                                        
 ##############################################################################################################################################################
 clear
 echo "Linux reboot checks"
