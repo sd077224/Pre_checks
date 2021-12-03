@@ -326,7 +326,7 @@ echo ""
                                 echo "Glusterd service is running" >> /tmp/health_checks.txt
                                 echo -e "\e[1;32m Glusterd service is running \e[0m"
                                 else
-                                echo -e "\e[1;32m Glusterd service inactive please check manually \e[0m"
+                                echo -e "\e[1;31m Glusterd service inactive please check manually \e[0m"
                                 fi
 
 
@@ -336,9 +336,9 @@ echo ""
                                 echo "Checking for Glusterfd Service status"
                                 if [[ `service glusterfsd status | grep -i running` ]]; then
                                 echo "Glusterd service is running" >> /tmp/health_checks.txt
-                                echo -e "\e[1;32m Glusterd service is running \e[0m"
+                                echo -e "\e[1;32m Glusterfsd service is running \e[0m"
                                 else
-                                echo -e "\e[1;31m Glusterd service inactive please check manually \e[0m"
+                                echo -e "\e[1;31m Glusterfsd service inactive please check manually \e[0m"
                                 fi
 
 #### Samba service status
