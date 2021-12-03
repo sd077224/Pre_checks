@@ -1,0 +1,388 @@
+##############################################################################################################################################################
+#                                                   Script Name: Domain_Health_Check                                                                         #
+#                                                   Description: This script generates the domain health check report.                                       #
+#                                                   Script Owner: Suyog Deshpande (sd077224)                                                                 #
+##############################################################################################################################################################
+clear
+rm -rf /tmp/health_checks.txt
+echo "Please select the node on which you're performing the health check"
+echo "**PLEASE SELECT THE NODE CORRECTLY**"
+echo "1)App Node"
+echo "2)Gluster Node "
+echo "3)Exit"
+echo "Enter your choice"
+read choice
+case "$choice" in
+
+1)echo "############################################------DOMAIN_HEALTH_CHECK_IS_RUNNING_ON_APP------############################################"
+echo ""
+echo ""
+echo "Below information will be sent to your email id once the script execution is completed"
+echo ""
+echo ""
+####Hostname
+                i=`hostname`
+                echo Servername = $i >> /tmp/health_checks.txt
+                echo "Hostname= $i"
+### Date
+                i=`date`
+                echo DATE = $i >> /tmp/health_checks.txt
+                echo "DATE= $i"
+###OS Version check
+                i=`cat /etc/system-release`
+                echo OS Version = $i >> /tmp/health_checks.txt
+                echo "OS Version= $i"
+###Console IP
+                echo ""
+                if [[ `ipmitool lan print 2 | grep "^IP Address  "` ]];
+                then
+                i=`ipmitool lan print 2 | grep "^IP Address  "`
+                echo Console $i >> /tmp/health_checks.txt
+                echo "Found ILO/Console $i"
+                else
+                echo "This is not a physical server"
+                fi
+
+#### Uptime and load on the server
+                echo ""
+                echo ""
+                echo "Checking uptime and load on the server"
+                i=`uptime | awk '{print $3}'`
+                echo Server is up from= $i days >> /tmp/health_checks.txt
+                echo ""
+                echo "Server is up  from $i days"
+                i=`uptime | awk '{print $10,$11,$12}'`
+                echo Load average: $i >> /tmp/health_checks.txt
+                echo "Average load on the server = $i"
+
+###Memory and Swap check
+                echo ""
+                echo "Memeory and Swap check is in progress"
+                i=`free -h | grep -i mem | awk '{print $2}'`
+                echo Total memory=$i >> /tmp/health_checks.txt
+                echo "Total memory = $i"
+
+
+                i=`free -h | grep -i mem | awk '{print $3}'`
+                echo Used Memory=$i >> /tmp/health_checks.txt
+                echo "Used Memory = $i"
+
+
+                i=`free -h | grep -i mem | awk '{print $4}'`
+                echo Free Memory=$i >> /tmp/health_checks.txt
+                echo "Free Memory= $i"
+
+                echo ""
+                echo "Swap Memory Usage"
+                i=`free -h | grep -i swap | awk '{print $2}'`
+                echo Total Swap memory=$i >> /tmp/health_checks.txt
+                echo "Total Swap Memory = $i"
+
+
+                i=`free -h | grep -i swap | awk '{print $3}'`
+                echo Used Swap memory=$i >> /tmp/health_checks.txt
+                echo "Used Swap Memory = $i"
+                echo "Used Swap Memory =$i"
+
+                i=`free -h | grep -i swap | awk '{print $4}'`
+                echo Free Swap memory=$i >> /tmp/health_checks.txt
+                echo "Memeory and Swap check is completed"
+
+###RPM checki
+                echo ""
+                echo ""
+                echo "" >> /tmp/health_checks.txt
+                echo "" >> /tmp/health_checks.txt
+                echo "Performing RPM health check...."
+                if [[ `rpm -qa` ]];
+                then
+                echo "RPM database is working fine" >> /tmp/health_checks.txt
+                echo "RPM database is working fine"
+                else
+                echo "RPM database is in hung state" >> /tmp/health_checks.txt
+                echo "RPM database is in hung state"
+                fi
+                echo "RPM Health check completed"
+
+#### Backup image list
+                echo ""
+                echo ""
+                echo "" >> /tmp/health_checks.txt
+                echo "" >> /tmp/health_checks.txt
+                echo "Performing Backup checks...."
+                if [[ `/usr/openv/netbackup/bin/bpclimagelist` ]];
+                then
+                echo "Backups are configured properly" >> /tmp/health_checks.txt
+                echo "Backups are configured correctly"
+                echo "Backup images list" >> /tmp/health_checks.txt
+                /usr/openv/netbackup/bin/bpclimagelist >> /tmp/health_checks.txt
+                else
+                echo "Backups are not configured, please check manually" >> /tmp/health_checks.txt
+                echo "Backup are not configured, please review manually"
+                fi
+                echo "Backup checks completed"
+
+###File System Check
+                echo ""
+                echo ""
+                echo "" >> /tmp/health_checks.txt
+                echo "" >> /tmp/health_checks.txt
+                echo "File system check in progress"
+                if [[ `df -Ph | awk '0+$5 >= 85 {print}'` ]];
+                then
+                echo "Below File systems are above 85%" >> /tmp/health_checks.txt
+                echo "Few file systems are above 85%"
+                echo "Details of the File systems that are above 85% has been sent to your email id"
+                df -Ph | awk '0+$5 >= 85 {print}' >> /tmp/health_checks.txt
+                else
+                echo "All the File systems are below 85% usage" >> /tmp/health_checks.txt
+                echo "All the File systems are below 85% usage"
+                fi
+                echo "File system checks are completed"
+##### Inode checks
+                echo ""
+                echo ""
+                echo "" >> /tmp/health_checks.txt
+                echo "" >> /tmp/health_checks.txt
+                echo "Checking inode usage"
+                if [[ `df -Phi | awk '0+$5 >= 20 {print}'` ]];
+                then
+                echo "Below File systems are having inode usage more than 20%" >> /tmp/health_checks.txt
+                echo "Found File system exceeding 20% inode usage, details has been sent to your email"
+                df -Phi | awk '0+$5 >= 20 {print}' >> /tmp/health_checks.txt
+                else
+                echo "No File system is having above 20% inode usage" >> /tmp/health_checks.txt
+                echo "All file systems are having below 20% inode usage"
+                fi
+                echo "Inode usage report completed"
+                echo "Enter your Mail id (example suyog.deshpande@cerner.com)"
+                read f1
+                echo ""
+                echo ""
+                mail -a /tmp/health_checks.txt  -s "Domain health check report on - $(hostname)" $f1 < /dev/null
+                echo""
+                echo""
+                echo "Domain health check report sent to: $f1"
+                echo""
+                echo""
+;;
+
+2)echo "############################################------DOMAIN_HEALTH_CHECK_IS_RUNNING_ON_GLUSTER------############################################"
+echo ""
+echo ""
+echo "Below information will be sent to your email id once the script execution is completed"
+echo ""
+echo ""
+####Hostname
+                i=`hostname`
+                echo Servername = $i >> /tmp/health_checks.txt
+                echo "Hostname= $i"
+### Date
+                i=`date`
+                echo DATE = $i >> /tmp/health_checks.txt
+                echo "DATE= $i"
+###OS Version check
+                i=`cat /etc/system-release`
+                echo OS Version = $i >> /tmp/health_checks.txt
+                echo "OS Version= $i"
+###Console IP
+                echo ""
+                if [[ `ipmitool lan print 2 | grep "^IP Address  "` ]];
+                then
+                i=`ipmitool lan print 2 | grep "^IP Address  "`
+                echo Console $i >> /tmp/health_checks.txt
+                echo "Found ILO/Console $i"
+                else
+                echo "This is not a physical server"
+                fi
+
+#### Uptime and load on the server
+                echo ""
+                echo ""
+                echo "Checking uptime and load on the server"
+                i=`uptime | awk '{print $3}'`
+                echo Server is up from= $i days >> /tmp/health_checks.txt
+                echo ""
+                echo "Server is up  from $i days"
+                i=`uptime | awk '{print $10,$11,$12}'`
+                echo Load average: $i >> /tmp/health_checks.txt
+                echo "Average load on the server = $i"
+
+###Memory and Swap check
+                echo ""
+                echo "Memeory and Swap check is in progress"
+                i=`free -h | grep -i mem | awk '{print $2}'`
+                echo Total memory=$i >> /tmp/health_checks.txt
+                echo "Total memory = $i"
+
+
+                i=`free -h | grep -i mem | awk '{print $3}'`
+                echo Used Memory=$i >> /tmp/health_checks.txt
+                echo "Used Memory = $i"
+
+
+                i=`free -h | grep -i mem | awk '{print $4}'`
+                echo Free Memory=$i >> /tmp/health_checks.txt
+                echo "Free Memory= $i"
+
+                echo ""
+                echo "Swap Memory Usage"
+                i=`free -h | grep -i swap | awk '{print $2}'`
+                echo Total Swap memory=$i >> /tmp/health_checks.txt
+                echo "Total Swap Memory = $i"
+
+
+                i=`free -h | grep -i swap | awk '{print $3}'`
+                echo Used Swap memory=$i >> /tmp/health_checks.txt
+                echo "Used Swap Memory = $i"
+                echo "Used Swap Memory =$i"
+
+                i=`free -h | grep -i swap | awk '{print $4}'`
+                echo Free Swap memory=$i >> /tmp/health_checks.txt
+                echo "Memeory and Swap check is completed"
+
+###RPM checki
+                echo ""
+                echo ""
+                echo "" >> /tmp/health_checks.txt
+                echo "" >> /tmp/health_checks.txt
+                echo "Performing RPM health check...."
+                if [[ `rpm -qa` ]];
+                then
+                echo "RPM database is working fine" >> /tmp/health_checks.txt
+                echo "RPM database is working fine"
+                else
+                echo "RPM database is in hung state" >> /tmp/health_checks.txt
+                echo "RPM database is in hung state"
+                fi
+                echo "RPM Health check completed"
+
+#### Backup image list
+                echo ""
+                echo ""
+                echo "" >> /tmp/health_checks.txt
+                echo "" >> /tmp/health_checks.txt
+                echo "Performing Backup checks...."
+                if [[ `/usr/openv/netbackup/bin/bpclimagelist` ]];
+                then
+                echo "Backups are configured properly" >> /tmp/health_checks.txt
+                echo "Backups are configured correctly"
+                echo "Backup images list" >> /tmp/health_checks.txt
+                /usr/openv/netbackup/bin/bpclimagelist >> /tmp/health_checks.txt
+                else
+                echo "Backups are not configured, please check manually" >> /tmp/health_checks.txt
+                echo "Backup are not configured, please review manually"
+                fi
+                echo "Backup checks completed"
+
+###File System Check
+                echo ""
+                echo ""
+                echo "" >> /tmp/health_checks.txt
+                echo "" >> /tmp/health_checks.txt
+                echo "File system check in progress"
+                if [[ `df -Ph | awk '0+$5 >= 85 {print}'` ]];
+                then
+                echo "Below File systems are above 85%" >> /tmp/health_checks.txt
+                echo "Few file systems are above 85%"
+                echo "Details of the File systems that are above 85% has been sent to your email id"
+                df -Ph | awk '0+$5 >= 85 {print}' >> /tmp/health_checks.txt
+                else
+                echo "All the File systems are below 85% usage" >> /tmp/health_checks.txt
+                echo "All the File systems are below 85% usage"
+                fi
+                echo "File system checks are completed"
+##### Inode checks
+                echo ""
+                echo ""
+                echo "" >> /tmp/health_checks.txt
+                echo "" >> /tmp/health_checks.txt
+                echo "Checking inode usage"
+                if [[ `df -Phi | awk '0+$5 >= 20 {print}'` ]];
+                then
+                echo "Below File systems are having inode usage more than 20%" >> /tmp/health_checks.txt
+                echo "Found File system exceeding 20% inode usage, details has been sent to your email"
+                df -Phi | awk '0+$5 >= 20 {print}' >> /tmp/health_checks.txt
+                else
+                echo "No File system is having above 20% inode usage" >> /tmp/health_checks.txt
+                echo "All file systems are having below 20% inode usage"
+                fi
+				echo "" >> /tmp/health_checks.txt
+				echo "" >> /tmp/health_checks.txt
+				
+###### Glusterd Service status
+				echo ""
+				echo ""
+				echo "Checking for Glusterd Service status"
+				if [[ `service glusterd status | grep -i running` ]]; then
+				echo "Glusterd service is running" >> /tmp/health_checks.txt
+				echo "Glusterd service is running" 
+				else
+				echo "Glusterd service inactive please check manually"
+				fi
+				echo "Glusterd service check completed"
+				
+
+#### Glusterfsd service status
+				echo ""
+				echo ""
+				echo "Checking for Glusterfd Service status" 
+				if [[ `service glusterfsd status | grep -i running` ]]; then
+				echo "Glusterd service is running" >> /tmp/health_checks.txt
+				echo "Glusterd service is running" 
+				else
+				echo "Glusterd service inactive please check manually"
+				fi
+				echo "Glusterfsd service check completed"
+
+#### Samba service status
+				echo ""
+				echo ""	
+				echo "Checking for Samba Service status" 
+				if [[ `service smb status  | grep -i running` ]]; then
+				echo "Samba service is running" >> /tmp/health_checks.txt 
+				echo "Samba service is running" 
+				else
+				echo "Samba service inactive please check manually"
+				fi
+				echo "Samba service check completed"
+				
+### Gluster volume information
+				echo ""
+				echo ""
+				echo "Checking for gluster volume status" 
+				if [[ `gluster volume status` ]];
+				then
+				echo "Gluster volume status output added to the report"
+				gluster volume status >> /tmp/health_checks.txt 
+				else
+				echo "Gluster volume status failed"				
+				fi
+				echo "Gluster volume check completed"
+
+#### Gluster File system mount check
+				echo ""
+				echo ""
+				echo "Checcking for Gluster mount point"
+				if [[ `df -Th | grep -i gluster` ]];
+				then
+				echo "Gluster file system is mounted" >> /tmp/health_checks.txt 
+				echo "Gluster file system is mounted"
+				else
+				echo "Gluster file system is not mounted please check" >> /tmp/health_checks.txt 
+				echo "Gluster file system is not mounted please check"
+				fi
+				echo "Mount point check completed" 
+				echo "Enter your Mail id (example suyog.deshpande@cerner.com)"
+                read f1
+                echo ""
+                echo ""
+                mail -a /tmp/health_checks.txt  -s "Domain health check report on - $(hostname)" $f1 < /dev/null
+                echo""
+                echo""
+                echo "Domain health check report sent to: $f1"
+                echo""
+                echo""
+;;
+esac
+
