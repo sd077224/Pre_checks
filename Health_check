@@ -52,15 +52,15 @@ echo ""
                 echo ""
                 echo ""
                 trigger=180
-			          load=`uptime | awk '{print $3}'`
-			          response=`echo | awk -v T=$trigger -v L=$load 'BEGIN{if ( L > T){ print "trigger"}}'`
-			          if [ "$response" > "$trigger" ]; then
-			          echo Server is up from= $load days >> /tmp/health_checks.txt
-			          echo ""
-			          echo -e "\e[1;31m Server is up  from $load days \e[0m" 
-			          else
-			          echo -e "\e[1;32m Server is up  from $load days \e[0m"
-			          fi
+		load=`uptime | awk '{print $3}'`
+		response=`echo | awk -v T=$trigger -v L=$load 'BEGIN{if ( L > T){ print "trigger"}}'`
+		if [ "$response" > "$trigger" ]; then
+		echo Server is up from= $load days >> /tmp/health_checks.txt
+		echo ""
+		echo -e "\e[1;31m Server is up  from $load days \e[0m" 
+		else
+		echo -e "\e[1;32m Server is up  from $load days \e[0m"
+		fi
 
 ####Load on the server                
                 i=`uptime | awk '{print $10,$11,$12}'`
