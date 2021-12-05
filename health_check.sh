@@ -375,7 +375,7 @@ echo ""
                                 echo -e "\e[1;33m Gluster volume status output added to the report \e[0m"
                                 gluster volume status >> /tmp/health_checks.txt
                                 else
-                                echo -e "[1;31m Gluster volume status failed \e[0m"
+                                echo -e "\e[1;31m Gluster volume status failed \e[0m"
                                 fi
 
 #### Gluster File system mount check
