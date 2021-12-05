@@ -390,19 +390,30 @@ echo ""
                                 echo "Gluster file system is not mounted please check" >> /tmp/health_checks.txt
                                 echo -e "\e[1;31m Gluster file system is not mounted please check \e[0m"
                                 fi
+				
+#####Testing file creation
+				echo "Creating testing.file please wait"	
+				if [[ `df -Th | grep glusterfs | awk '{print $7}'` ]];
+				then
+				i=`df -Th | grep glusterfs | awk '{print $7}'`
+				echo "testing_health" >> $i/testing.file
+				echo -e "\e[1;32m testing.file created sucessfully under: $i\e[0m"
+				else
+				echo -e "\e[1;31m Unable to create test file,please check the gluster file system \e[0m"
+				fi
                                 echo ""
                                 echo "Enter your Mail id receive the report of check list (example suyog.deshpande@cerner.com)"
-                read f1
-                echo ""
-                echo ""
-                mail -a /tmp/health_checks.txt  -s "Domain health check report on - $(hostname)" $f1 < /dev/null
-                echo""
-                echo""
-                echo -e "\e[1;36m Domain Health check completed \e[0m"
-                echo ""
-                echo ""
-                echo -e "\e[1;35m Domain health check report sent to: $f1 \e[0m"
-                echo""
-                echo""
+               		        read f1
+               		        echo ""
+               		        echo ""
+               		        mail -a /tmp/health_checks.txt  -s "Domain health check report on - $(hostname)" $f1 < /dev/null
+               		        echo""
+               		        echo""
+               		        echo -e "\e[1;36m Domain Health check completed \e[0m"
+               		        echo ""
+               		        echo ""
+               		        echo -e "\e[1;35m Domain health check report sent to: $f1 \e[0m"
+               		        echo""
+               		        echo""
 ;;
 esac
