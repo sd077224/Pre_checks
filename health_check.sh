@@ -395,7 +395,7 @@ echo ""
 				echo "Creating testing.file please wait"	
 				if [[ `df -Th | grep glusterfs | awk '{print $7}'` ]];
 				then
-				i=`df -Th | grep glusterfs | awk '{print $7}'`
+				i=`df -Th | grep glusterfs | awk '{print $7}' | head -1`
 				echo "testing_health" >> $i/testing.file
 				echo -e "\e[1;32m testing.file created sucessfully under: $i\e[0m"
 				else
