@@ -392,6 +392,8 @@ echo ""
                                 fi
 				
 #####Testing file creation
+				echo ""
+				echo ""
 				echo "Creating testing.file please wait"	
 				if [[ `df -Th | grep glusterfs | awk '{print $7}'` ]];
 				then
@@ -401,6 +403,18 @@ echo ""
 				else
 				echo -e "\e[1;31m Unable to create test file,please check the gluster file system \e[0m"
 				fi
+				
+#####Testing file creation part 2 				
+				if [[ `df -Th | grep glusterfs | awk '{print $7}'` ]];
+				then
+				i=`df -Th | grep glusterfs | awk '{print $7}' | tail -1`
+				echo "testing_health" >> $i/testing.file
+				echo -e "\e[1;32m testing.file created sucessfully under: $i\e[0m"
+				else
+				echo -e "\e[1;31m Unable to create test file,please check the gluster file system \e[0m"
+				fi
+				
+				
                                 echo ""
                                 echo "Enter your Mail id receive the report of check list (example suyog.deshpande@cerner.com)"
                		        read f1
