@@ -777,18 +777,18 @@ echo ""
 
 #####Clsetup_checks
 		echo ""
-		echo ""
-		echo "" >>  /tmp/health_checks.txt
-		echo ""  >>  /tmp/health_checks.txt
+		echo ""		
 		echo "Please wait clsetup check is in progress......" 
 		if [[ `clsetup status sensage` ]];
 		then
-		clsetup status sensage >> /tmp/health_checks.txt
 		else
 		echo -e "\e[1;31m clsetup not found, please review manually \e[0m"
 		fi
 
 ####Listener status
+		echo ""
+		echo ""
+		echo "Checking Listener status"
 		if [[ `netstat -nap | grep :900` ]];
                 then
                 echo -e "\e[1;32m Listener is running \e[0m"
