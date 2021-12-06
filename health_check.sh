@@ -12,7 +12,8 @@ echo -e "\e[1;31m**PLEASE SELECT THE NODE CORRECTLY**\e[0m"
 echo ""
 echo "1)App Node"
 echo "2)Gluster Node "
-echo "3)Exit"
+echo "3)iBus"
+echo "4)Exit"
 echo ""
 echo "Enter your choice"
 read choice
@@ -414,7 +415,7 @@ echo ""
 				echo -e "\e[1;31m Unable to create test file,please check the gluster file system \e[0m"
 				fi
 				
-				
+###Notification Part				
                                 echo ""
                                 echo "Enter your Mail id receive the report of check list (example suyog.deshpande@cerner.com)"
                		        read f1
@@ -429,5 +430,192 @@ echo ""
                		        echo -e "\e[1;35m Domain health check report sent to: $f1 \e[0m"
                		        echo""
                		        echo""
+;;
+
+3)echo ""
+echo -e "\e[1;32m Domain health check is in progress......\e[0m"
+echo ""
+echo ""
+echo -e "\e[1;33m Below information will be sent to your email id once the script execution is completed\e[0m"
+echo ""
+echo ""
+####Hostname
+                i=`hostname`
+                echo Servername = $i >> /tmp/health_checks.txt
+                echo "Hostname= $i"
+### Date
+                i=`date`
+                echo DATE = $i >> /tmp/health_checks.txt
+                echo "DATE= $i"
+###OS Version check
+                i=`cat /etc/system-release`
+                echo OS Version = $i >> /tmp/health_checks.txt
+                echo "OS Version= $i"
+###Console IP
+                echo ""
+                if [[ `ipmitool lan print 2 | grep "^IP Address  "` ]];
+                then
+                i=`ipmitool lan print 2 | grep "^IP Address  "`
+                echo Console $i >> /tmp/health_checks.txt
+                echo "Found ILO/Console $i"
+                else
+                echo "This is not a physical server"
+                fi
+
+#### Uptime and load on the server
+                echo ""
+                echo ""
+                trigger=180
+		load=`uptime | awk '{print $3}'`
+		response=`echo | awk -v T=$trigger -v L=$load 'BEGIN{if ( L > T){ print "trigger"}}'`
+		if [ "$response" > "$trigger" ]; then
+		echo Server is up from= $load days >> /tmp/health_checks.txt
+		echo ""
+		echo -e "\e[1;31m Server is up  from $load days \e[0m" 
+		else
+		echo -e "\e[1;32m Server is up  from $load days \e[0m"
+		fi
+
+####Load on the server                
+                i=`uptime | awk '{print $10,$11,$12}'`
+                echo Load average: $i >> /tmp/health_checks.txt
+                echo "Average load on the server = $i"
+
+###Memory and Swap check
+                echo ""
+                echo "Memeory and Swap check is in progress"
+                i=`free -h | grep -i mem | awk '{print $2}'`
+                echo Total memory=$i >> /tmp/health_checks.txt
+                echo "Total memory = $i"
+
+
+                i=`free -h | grep -i mem | awk '{print $3}'`
+                echo Used Memory=$i >> /tmp/health_checks.txt
+                echo "Used Memory = $i"
+
+
+                i=`free -h | grep -i mem | awk '{print $4}'`
+                echo Free Memory=$i >> /tmp/health_checks.txt
+                echo "Free Memory= $i"
+
+                echo ""
+                echo "Swap Memory Usage"
+                i=`free -h | grep -i swap | awk '{print $2}'`
+                echo Total Swap memory=$i >> /tmp/health_checks.txt
+                echo "Total Swap Memory = $i"
+
+
+                i=`free -h | grep -i swap | awk '{print $3}'`
+                echo Used Swap memory=$i >> /tmp/health_checks.txt
+                echo "Used Swap Memory = $i"
+                echo "Used Swap Memory =$i"
+
+                i=`free -h | grep -i swap | awk '{print $4}'`
+                echo Free Swap memory=$i >> /tmp/health_checks.txt
+#                echo "Memeory and Swap check is completed"
+
+###RPM checki
+                echo ""
+                echo ""
+                echo "" >> /tmp/health_checks.txt
+                echo "" >> /tmp/health_checks.txt
+                echo "Performing RPM health check...."
+                if [[ `rpm -qa` ]];
+                then
+                echo "RPM database is working fine" >> /tmp/health_checks.txt
+                echo -e "\e[1;32mRPM database is working fine\e[0m"
+                else
+                echo "RPM database is in hung state" >> /tmp/health_checks.txt
+                echo -e "\e[1;31m RPM database is in hung state \e[0m"
+                fi
+#                echo "RPM Health check completed"
+
+#### Backup image list
+                echo ""
+                echo ""
+                echo "" >> /tmp/health_checks.txt
+                echo "" >> /tmp/health_checks.txt
+                echo "Performing Backup checks...."
+                if [[ `/usr/openv/netbackup/bin/bpclimagelist` ]];
+                then
+                echo  "Backups are configured properly" >> /tmp/health_checks.txt
+                echo -e "\e[1;32m Backups are configured correctly \e[0m"
+                echo "Backup images list" >> /tmp/health_checks.txt
+                /usr/openv/netbackup/bin/bpclimagelist >> /tmp/health_checks.txt
+                else
+                echo "Backups are not configured, please check manually" >> /tmp/health_checks.txt
+                echo -e "\e[1;31m Backups are not configured, please review manually \e[0m"
+                fi
+#                echo "Backup checks completed"
+
+###File System Check
+                echo ""
+                echo ""
+                echo "" >> /tmp/health_checks.txt
+                echo "" >> /tmp/health_checks.txt
+                echo "File system check in progress"
+                if [[ `df -Ph | awk '0+$5 >= 85 {print}'` ]];
+                then
+                echo "Below File systems are above 85%" >> /tmp/health_checks.txt
+                echo -e "\e[1;31m Few file systems are above 85% \e[0m"
+                echo -e "\e[1;31m Details of the File systems that are above 85% has been sent to your email id \e[0m"
+                df -Ph | awk '0+$5 >= 85 {print}' >> /tmp/health_checks.txt
+                else
+                echo "All the File systems are below 85% usage" >> /tmp/health_checks.txt
+                echo -e "\e[1;32m All the File systems are having below 85% usage \e[0m"
+                fi
+#                echo "File system checks are completed"
+##### Inode checks
+                echo ""
+                echo ""
+                echo "" >> /tmp/health_checks.txt
+                echo "" >> /tmp/health_checks.txt
+                echo "Checking inode usage"
+                if [[ `df -Phi | awk '0+$5 >= 20 {print}'` ]];
+                then
+                echo "Below File systems are having inode usage more than 20%" >> /tmp/health_checks.txt
+                echo -e "\e[1;31m Found File system exceeding 20% inode usage, details has been sent to your email \e[0m"
+                df -Phi | awk '0+$5 >= 20 {print}' >> /tmp/health_checks.txt
+                else
+                echo "No File system is having above 20% inode usage" >> /tmp/health_checks.txt
+                echo -e "\e[1;32m All the file systems are having below 20% inode usage \e[0m"
+                fi
+
+###ibus_checks
+		rm -rf /tmp/ibus-details.txt
+		if [[ `find /usr/local/cwx/ibus_info.sh` ]]; then
+		echo "Found the ibus details as below"
+		echo ""
+		/usr/local/cwx/ibus_info.sh >> /tmp/health_check.txt
+		/usr/local/cwx/ibus_info.sh >> /tmp/ibus-details.txt
+		i=`cat /tmp/ibus-details.txt | grep -i Sonic | head -1`
+		echo -e "\e[1;35m $i \e[0m"
+		i=`cat /tmp/ibus-details.txt | grep -i java`
+		echo -e "\e[1;35m $i \e[0m"
+		i=`cat /tmp/ibus-details.txt | grep -i ibus | tail -1`
+		echo -e "\e[1;35m $i \e[0m"
+		i=`mysql --version`
+		echo -e "\e[1;35m Mysql Version $i \e[0m"
+		else
+		echo "No ibus details found,please verify manually"
+		fi
+
+		
+###Notification Part				
+               echo ""
+               echo "Enter your Mail id receive the report of check list (example suyog.deshpande@cerner.com)"
+               read f1
+               echo ""
+               echo ""
+               mail -a /tmp/health_checks.txt  -s "Domain health check report on - $(hostname)" $f1 < /dev/null
+               echo""
+               echo""
+               echo -e "\e[1;36m Domain Health check completed \e[0m"
+               echo ""
+               echo ""
+               echo -e "\e[1;35m Domain health check report sent to: $f1 \e[0m"
+               echo""
+               echo""
+
 ;;
 esac
