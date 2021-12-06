@@ -781,6 +781,7 @@ echo ""
 		echo "Please wait clsetup check is in progress......" 
 		if [[ `clsetup status sensage` ]];
 		then
+		echo ""
 		else
 		echo -e "\e[1;31m clsetup not found, please review manually \e[0m"
 		fi
