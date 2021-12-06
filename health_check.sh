@@ -582,11 +582,13 @@ echo ""
                 fi
 
 ###ibus_checks
+		echo ""
+		echo ""
 		rm -rf /tmp/ibus-details.txt
 		if [[ `find /usr/local/cwx/ibus_info.sh` ]]; then
-		echo "Found the ibus details as below"
+		echo "Found the ibus details as below:"
 		echo ""
-		/usr/local/cwx/ibus_info.sh >> /tmp/health_check.txt
+		/usr/local/cwx/ibus_info.sh >> /tmp/health_checks.txt
 		/usr/local/cwx/ibus_info.sh >> /tmp/ibus-details.txt
 		i=`cat /tmp/ibus-details.txt | grep -i Sonic | head -1`
 		echo -e "\e[1;35m $i \e[0m"
@@ -595,7 +597,7 @@ echo ""
 		i=`cat /tmp/ibus-details.txt | grep -i ibus | tail -1`
 		echo -e "\e[1;35m $i \e[0m"
 		i=`mysql --version`
-		echo -e "\e[1;35m Mysql Version $i \e[0m"
+		echo -e "\e[1;35m Mysql is running on: $i \e[0m"
 		else
 		echo "No ibus details found,please verify manually"
 		fi
