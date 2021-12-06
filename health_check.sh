@@ -3,6 +3,7 @@
 #                                                   Description: This script generates the domain health check report.                                       #
 #                                                   Script Owner: Suyog Deshpande (sd077224)                                                                 #
 ##############################################################################################################################################################
+#!bin/bash
 clear
 rm -rf /tmp/health_checks.txt
 echo ""
