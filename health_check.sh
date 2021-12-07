@@ -200,6 +200,7 @@ echo ""
 
 2)echo ""
 echo -e "\e[1;32m Domain health check is in progress......\e[0m"
+sleep 5
 echo ""
 echo ""
 echo -e "\e[1;33m Below information will be sent to your email id once the script execution is completed\e[0m"
@@ -209,14 +210,17 @@ echo ""
                 i=`hostname`
                 echo Servername = $i >> /tmp/health_checks.txt
                 echo "Hostname= $i"
+		sleep 3
 ### Date
                 i=`date`
                 echo DATE = $i >> /tmp/health_checks.txt
                 echo "DATE= $i"
+		sleep 3
 ###OS Version check
                 i=`cat /etc/system-release`
                 echo OS Version = $i >> /tmp/health_checks.txt
                 echo "OS Version= $i"
+		sleep 3
 ###Console IP
                 echo ""
                 if [[ `ipmitool lan print 2 | grep "^IP Address  "` ]];
@@ -227,6 +231,7 @@ echo ""
                 else
                 echo "This is not a physical server"
                 fi
+		sleep 3
 
 #### Uptime and load on the server
                 echo ""
@@ -241,15 +246,18 @@ echo ""
 		else
 		echo -e "\e[1;32m Server is up  from $load days \e[0m"
 		fi
+		sleep 3
 
 ####Load on the server                
                 i=`uptime | awk '{print $10,$11,$12}'`
                 echo Load average: $i >> /tmp/health_checks.txt
                 echo "Average load on the server = $i"
+		sleep 3
 
 ###Memory and Swap check
                 echo ""
                 echo "Memeory and Swap check is in progress"
+		sleep 3
                 i=`free -h | grep -i mem | awk '{print $2}'`
                 echo Total memory=$i >> /tmp/health_checks.txt
                 echo "Total memory = $i"
@@ -286,6 +294,7 @@ echo ""
                 echo "" >> /tmp/health_checks.txt
                 echo "" >> /tmp/health_checks.txt
                 echo "Performing RPM health check...."
+		sleep 3
                 if [[ `rpm -qa` ]];
                 then
                 echo "RPM database is working fine" >> /tmp/health_checks.txt
@@ -302,6 +311,7 @@ echo ""
                 echo "" >> /tmp/health_checks.txt
                 echo "" >> /tmp/health_checks.txt
                 echo "Performing Backup checks...."
+		sleep 3
                 if [[ `/usr/openv/netbackup/bin/bpclimagelist` ]];
                 then
                 echo  "Backups are configured properly" >> /tmp/health_checks.txt
@@ -320,6 +330,7 @@ echo ""
                 echo "" >> /tmp/health_checks.txt
                 echo "" >> /tmp/health_checks.txt
                 echo "File system check in progress"
+		sleep 3
                 if [[ `df -Ph | awk '0+$5 >= 85 {print}'` ]];
                 then
                 echo "Below File systems are above 85%" >> /tmp/health_checks.txt
@@ -337,6 +348,7 @@ echo ""
                 echo "" >> /tmp/health_checks.txt
                 echo "" >> /tmp/health_checks.txt
                 echo "Checking inode usage"
+		sleep 3
                 if [[ `df -Phi | awk '0+$5 >= 20 {print}'` ]];
                 then
                 echo "Below File systems are having inode usage more than 20%" >> /tmp/health_checks.txt
@@ -351,6 +363,7 @@ echo ""
                                 echo ""
                                 echo ""
                                 echo "Checking for Glusterd Service status"
+				sleep 3
                                 if [[ `service glusterd status | grep -i running` ]]; then
                                 echo "Glusterd service is running" >> /tmp/health_checks.txt
                                 echo -e "\e[1;32m Glusterd service is running \e[0m"
@@ -363,6 +376,7 @@ echo ""
                                 echo ""
                                 echo ""
                                 echo "Checking for Glusterfd Service status"
+				sleep 3
                                 if [[ `service glusterfsd status | grep -i running` ]]; then
                                 echo "Glusterd service is running" >> /tmp/health_checks.txt
                                 echo -e "\e[1;32m Glusterfsd service is running \e[0m"
@@ -374,6 +388,7 @@ echo ""
                                 echo ""
                                 echo ""
                                 echo "Checking for Samba Service status"
+				sleep 3
                                 if [[ `service smb status  | grep -i running` ]]; then
                                 echo "Samba service is running" >> /tmp/health_checks.txt
                                 echo -e "\e[1;32m Samba service is running \e[0m"
@@ -385,6 +400,7 @@ echo ""
                                 echo ""
                                 echo ""
                                 echo "Checking for gluster volume status"
+				sleep 3
                                 if [[ `gluster volume status` ]];
                                 then
                                 echo -e "\e[1;33m Gluster volume status output added to the report \e[0m"
@@ -397,6 +413,7 @@ echo ""
                                 echo ""
                                 echo ""
                                 echo "Checcking for Gluster mount point"
+				sleep 3
                                 if [[ `df -Th | grep -i gluster` ]];
                                 then
                                 echo "Gluster file system is mounted" >> /tmp/health_checks.txt
@@ -409,7 +426,8 @@ echo ""
 #####Testing file creation
 				echo ""
 				echo ""
-				echo "Creating testing.file please wait"	
+				echo "Creating testing.file please wait"
+				sleep 3
 				if [[ `df -Th | grep glusterfs | awk '{print $7}'` ]];
 				then
 				i=`df -Th | grep glusterfs | awk '{print $7}' | head -1`
