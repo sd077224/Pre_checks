@@ -23,6 +23,7 @@ case "$choice" in
 
 1)echo ""
 echo -e "\e[1;32m Domain health check is in progress......\e[0m"
+sleep 5
 echo ""
 echo ""
 echo -e "\e[1;33m Below information will be sent to your email id once the script execution is completed\e[0m"
@@ -32,14 +33,17 @@ echo ""
                 i=`hostname`
                 echo Servername = $i >> /tmp/health_checks.txt
                 echo "Hostname= $i"
+		sleep 3
 ### Date
                 i=`date`
                 echo DATE = $i >> /tmp/health_checks.txt
                 echo "DATE= $i"
+		sleep 3
 ###OS Version check
                 i=`cat /etc/system-release`
                 echo OS Version = $i >> /tmp/health_checks.txt
                 echo "OS Version= $i"
+		sleep 3
 ###Console IP
                 echo ""
                 if [[ `ipmitool lan print 2 | grep "^IP Address  "` ]];
@@ -50,6 +54,7 @@ echo ""
                 else
                 echo "This is not a physical server"
                 fi
+		sleep 3
 
 #### Uptime and load on the server
                 echo ""
@@ -64,15 +69,17 @@ echo ""
 		else
 		echo -e "\e[1;32m Server is up  from $load days \e[0m"
 		fi
-
+		sleep 3
+	
 ####Load on the server                
                 i=`uptime | awk '{print $10,$11,$12}'`
                 echo Load average: $i >> /tmp/health_checks.txt
                 echo "Average load on the server = $i"
-
+		
 ###Memory and Swap check
                 echo ""
                 echo "Memeory and Swap check is in progress"
+		sleep 3
                 i=`free -h | grep -i mem | awk '{print $2}'`
                 echo Total memory=$i >> /tmp/health_checks.txt
                 echo "Total memory = $i"
@@ -109,6 +116,7 @@ echo ""
                 echo "" >> /tmp/health_checks.txt
                 echo "" >> /tmp/health_checks.txt
                 echo "Performing RPM health check...."
+		sleep 2
                 if [[ `rpm -qa` ]];
                 then
                 echo "RPM database is working fine" >> /tmp/health_checks.txt
@@ -135,7 +143,7 @@ echo ""
                 echo "Backups are not configured, please check manually" >> /tmp/health_checks.txt
                 echo -e "\e[1;31m Backups are not configured, please review manually \e[0m"
                 fi
-#                echo "Backup checks completed"
+		sleep 3
 
 ###File System Check
                 echo ""
@@ -143,6 +151,7 @@ echo ""
                 echo "" >> /tmp/health_checks.txt
                 echo "" >> /tmp/health_checks.txt
                 echo "File system check in progress"
+		sleep 3
                 if [[ `df -Ph | awk '0+$5 >= 85 {print}'` ]];
                 then
                 echo "Below File systems are above 85%" >> /tmp/health_checks.txt
@@ -153,13 +162,14 @@ echo ""
                 echo "All the File systems are below 85% usage" >> /tmp/health_checks.txt
                 echo -e "\e[1;32m All the File systems are having below 85% usage \e[0m"
                 fi
-#                echo "File system checks are completed"
+		
 ##### Inode checks
                 echo ""
                 echo ""
                 echo "" >> /tmp/health_checks.txt
                 echo "" >> /tmp/health_checks.txt
-                echo "Checking inode usage"
+                echo "Checking inode usage..."
+		sleep 3
                 if [[ `df -Phi | awk '0+$5 >= 20 {print}'` ]];
                 then
                 echo "Below File systems are having inode usage more than 20%" >> /tmp/health_checks.txt
