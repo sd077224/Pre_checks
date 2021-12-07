@@ -466,6 +466,7 @@ echo ""
 
 3)echo ""
 echo -e "\e[1;32m Domain health check is in progress......\e[0m"
+sleep 3
 echo ""
 echo ""
 echo -e "\e[1;33m Below information will be sent to your email id once the script execution is completed\e[0m"
@@ -475,14 +476,17 @@ echo ""
                 i=`hostname`
                 echo Servername = $i >> /tmp/health_checks.txt
                 echo "Hostname= $i"
+		sleep 3
 ### Date
                 i=`date`
                 echo DATE = $i >> /tmp/health_checks.txt
                 echo "DATE= $i"
+		sleep 3
 ###OS Version check
                 i=`cat /etc/system-release`
                 echo OS Version = $i >> /tmp/health_checks.txt
                 echo "OS Version= $i"
+		sleep 3
 ###Console IP
                 echo ""
                 if [[ `ipmitool lan print 2 | grep "^IP Address  "` ]];
@@ -493,6 +497,7 @@ echo ""
                 else
                 echo "This is not a physical server"
                 fi
+		sleep 3
 
 #### Uptime and load on the server
                 echo ""
@@ -507,11 +512,13 @@ echo ""
 		else
 		echo -e "\e[1;32m Server is up  from $load days \e[0m"
 		fi
+		sleep 3
 
 ####Load on the server                
                 i=`uptime | awk '{print $10,$11,$12}'`
                 echo Load average: $i >> /tmp/health_checks.txt
                 echo "Average load on the server = $i"
+		sleep 3
 
 ###Memory and Swap check
                 echo ""
@@ -519,7 +526,7 @@ echo ""
                 i=`free -h | grep -i mem | awk '{print $2}'`
                 echo Total memory=$i >> /tmp/health_checks.txt
                 echo "Total memory = $i"
-
+		
 
                 i=`free -h | grep -i mem | awk '{print $3}'`
                 echo Used Memory=$i >> /tmp/health_checks.txt
@@ -544,7 +551,7 @@ echo ""
 
                 i=`free -h | grep -i swap | awk '{print $4}'`
                 echo Free Swap memory=$i >> /tmp/health_checks.txt
-#                echo "Memeory and Swap check is completed"
+		sleep 3
 
 ###RPM checki
                 echo ""
@@ -555,6 +562,7 @@ echo ""
                 if [[ `rpm -qa` ]];
                 then
                 echo "RPM database is working fine" >> /tmp/health_checks.txt
+		sleep 3
                 echo -e "\e[1;32mRPM database is working fine\e[0m"
                 else
                 echo "RPM database is in hung state" >> /tmp/health_checks.txt
@@ -568,6 +576,7 @@ echo ""
                 echo "" >> /tmp/health_checks.txt
                 echo "" >> /tmp/health_checks.txt
                 echo "Performing Backup checks...."
+		sleep 3
                 if [[ `/usr/openv/netbackup/bin/bpclimagelist` ]];
                 then
                 echo  "Backups are configured properly" >> /tmp/health_checks.txt
@@ -586,6 +595,7 @@ echo ""
                 echo "" >> /tmp/health_checks.txt
                 echo "" >> /tmp/health_checks.txt
                 echo "File system check in progress"
+		sleep 3
                 if [[ `df -Ph | awk '0+$5 >= 85 {print}'` ]];
                 then
                 echo "Below File systems are above 85%" >> /tmp/health_checks.txt
@@ -603,6 +613,7 @@ echo ""
                 echo "" >> /tmp/health_checks.txt
                 echo "" >> /tmp/health_checks.txt
                 echo "Checking inode usage"
+		sleep 3
                 if [[ `df -Phi | awk '0+$5 >= 20 {print}'` ]];
                 then
                 echo "Below File systems are having inode usage more than 20%" >> /tmp/health_checks.txt
@@ -624,10 +635,13 @@ echo ""
 		/usr/local/cwx/ibus_info.sh >> /tmp/ibus-details.txt
 		i=`cat /tmp/ibus-details.txt | grep -i Sonic | head -1`
 		echo -e "\e[1;35m $i \e[0m"
+		sleep 3
 		i=`cat /tmp/ibus-details.txt | grep -i java`
 		echo -e "\e[1;35m $i \e[0m"
+		sleep 3
 		i=`cat /tmp/ibus-details.txt | grep -i ibus | tail -1`
 		echo -e "\e[1;35m $i \e[0m"
+		sleep 3
 		i=`mysql --version`
 		echo -e "\e[1;35m Mysql is running on: $i \e[0m"
 		else
